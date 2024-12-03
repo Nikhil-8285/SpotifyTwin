@@ -96,7 +96,7 @@ async function displayAlbums() {
                                     <path d="M8 5v14l11-7z"></path>
                                 </svg>
                             </div>
-                            <img src="/songs/${folder}/cover.jpg" alt="" />
+                            <img src="https://nikhil-8285.github.io/songs/${folder}/cover.jpg" alt="cover" />
                             <h2>${response.title}</h2>
                             <p>${response.description}</p>
                         </div>`;
@@ -105,7 +105,7 @@ async function displayAlbums() {
 
     Array.from(document.getElementsByClassName('card')).forEach(e => {
         e.addEventListener('click', async item => {
-            songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`);
+            songs = await getSongs(`https://nikhil-8285.github.io/songs/${item.currentTarget.dataset.folder}`);
             playMusic(songs[0]);
             // console.log(getSongs(`songs/${item.currentTarget.dataset.folder}`))
         });
