@@ -18,16 +18,19 @@ function secondsToMinutesSeconds(seconds) {
 
 async function getSongs(folder) {
     currFolder = folder;
-    let a = await fetch(`https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/${folder}/`);
-    let response = await a.text();
+    let songsUrl = `https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/${folder}/`;
+    let response = await fetch(songsUrl);
+    let text = await response.text();
     let div = document.createElement('div');
-    div.innerHTML = response;
+    div.innerHTML = text;
     let as = div.getElementsByTagName('a');
     songs = [];
+
+    // Get all .mp3 files in the folder
     for (let index = 0; index < as.length; index++) {
         const element = as[index];
         if (element.href.endsWith('.mp3')) {
-            songs.push(element.href.split(`/${folder}/`)[1]);
+            songs.push(element.href.split(`/main/songs/${folder}/`)[1]);
         }
     }
 
@@ -68,8 +71,7 @@ const playMusic = (track, pause = false) => {
 };
 
 async function displayAlbums() {
-    // Fetching the album directories from the main `songs/` folder
-    let a = await fetch('https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/');
+    let a = await fetch(`https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/`);
     let response = await a.text();
     let div = document.createElement('div');
     div.innerHTML = response;
@@ -77,17 +79,16 @@ async function displayAlbums() {
     let cardContainer = document.querySelector('.cardContainer');
     let array = Array.from(anchors).splice(2, 8); // Get first few albums
 
-    // Loop through album directories
     for (let index = 0; index < array.length; index++) {
         const e = array[index];
         let folder = e.href.split('/').slice(-1)[0];
 
         try {
-            // Fetch album information from info.json file
+            // Fetch album info (info.json)
             let albumResponse = await fetch(`https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/${folder}/info.json`);
             let albumInfo = await albumResponse.json();
 
-            // Add album details to the UI
+            // Add album to the UI
             cardContainer.innerHTML += `
                 <div data-folder="${folder}" class="card">
                     <div class="play">
@@ -104,7 +105,6 @@ async function displayAlbums() {
         }
     }
 
-    // Handle album card clicks
     Array.from(document.getElementsByClassName('card')).forEach(e => {
         e.addEventListener('click', async item => {
             songs = await getSongs(item.currentTarget.dataset.folder);
