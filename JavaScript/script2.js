@@ -18,15 +18,12 @@ function secondsToMinutesSeconds(seconds) {
 
 async function getSongs(folder) {
     currFolder = folder;
-    // Fetch the song list from the folder's index (GitHub uses raw files)
     let a = await fetch(`https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/${folder}/`);
     let response = await a.text();
     let div = document.createElement('div');
     div.innerHTML = response;
     let as = div.getElementsByTagName('a');
     songs = [];
-
-    // Get all the mp3 files in the folder
     for (let index = 0; index < as.length; index++) {
         const element = as[index];
         if (element.href.endsWith('.mp3')) {
@@ -37,11 +34,9 @@ async function getSongs(folder) {
     let songUL = document.querySelector('.songlists').getElementsByTagName('ul')[0];
     songUL.innerHTML = '';
     
-    // Render the song list
     for (const song of songs) {
         songUL.innerHTML += `
-            <li>
-                <img class="invert" src="allSVG/music.svg" alt="music" />
+            <li><img class="invert" src="allSVG/music.svg" alt="music" />
                 <div class="songName">
                     <div class="dontShow">${song.replaceAll('%20', ' ')}</div>
                     <div>${song.replaceAll('%20', ' ').split(' -')[0]}</div>
@@ -50,11 +45,9 @@ async function getSongs(folder) {
                 <div class="playnow">
                     <span>Play Now</span>
                     <img class="invert" src="allSVG/pause.svg" alt="play">
-                </div>
-            </li>`;
+                </div></li>`;
     }
 
-    // Attach event listeners to the songs
     Array.from(document.querySelector('.songlists').getElementsByTagName('li')).forEach((e, index) => {
         e.addEventListener('click', element => {
             playMusic(e.querySelector('.songName').firstElementChild.innerHTML.trim());
@@ -75,8 +68,8 @@ const playMusic = (track, pause = false) => {
 };
 
 async function displayAlbums() {
-    // Fetch album info (info.json file)
-    let a = await fetch(`https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/`);
+    // Fetching the album directories from the main `songs/` folder
+    let a = await fetch('https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/');
     let response = await a.text();
     let div = document.createElement('div');
     div.innerHTML = response;
@@ -84,17 +77,17 @@ async function displayAlbums() {
     let cardContainer = document.querySelector('.cardContainer');
     let array = Array.from(anchors).splice(2, 8); // Get first few albums
 
-    // Process albums
+    // Loop through album directories
     for (let index = 0; index < array.length; index++) {
         const e = array[index];
-        let folder = e.href.split('/').slice(-1)[0]; // Extract folder name
+        let folder = e.href.split('/').slice(-1)[0];
 
         try {
-            // Fetch album information (info.json)
+            // Fetch album information from info.json file
             let albumResponse = await fetch(`https://raw.githubusercontent.com/Nikhil-8285/SpotifyTwin/main/songs/${folder}/info.json`);
             let albumInfo = await albumResponse.json();
 
-            // Add album to the UI
+            // Add album details to the UI
             cardContainer.innerHTML += `
                 <div data-folder="${folder}" class="card">
                     <div class="play">
@@ -147,7 +140,29 @@ async function main() {
         currentSong.currentTime = (currentSong.duration * percent) / 100;
     });
 
-    // Volume control
+    document.querySelector('.hamburger').addEventListener('click', () => {
+        document.querySelector('.left').style.left = '0';
+    });
+
+    document.querySelector('.close').addEventListener('click', () => {
+        document.querySelector('.left').style.left = '-130%';
+    });
+
+    previous.addEventListener('click', () => {
+        currentSong.pause();
+        let index = songs.indexOf(currentSong.src.split('/').slice(-1)[0]);
+        if (index - 1 >= 0) {
+            playMusic(songs[index - 1]);
+        }
+    });
+
+    next.addEventListener('click', () => {
+        let index = songs.indexOf(currentSong.src.split('/').slice(-1)[0]);
+        if (index + 1 < songs.length) {
+            playMusic(songs[index + 1]);
+        }
+    });
+
     document.querySelector('.range').getElementsByTagName('input')[0].addEventListener('change', e => {
         currentSong.volume = parseInt(e.target.value) / 100;
     });
