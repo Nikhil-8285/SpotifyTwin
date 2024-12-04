@@ -4,7 +4,8 @@
 
 **SpotifyTwin** is a web-based music player built using HTML, CSS, and JavaScript that replicates the Spotify experience. It allows users to browse music albums, play and pause songs, and control playback with an interactive interface. With features like volume control, seekbar, and album art display, this app delivers a smooth, user-friendly music experience. It is designed to work seamlessly on both desktop and mobile devices.
 
-**Important Note:** The app relies on local APIs to load songs and albums. As a result, some songs and albums may not load properly when hosted without local API support.
+## Important Note
+The app relies on local APIs to load songs and albums. As a result, some songs and albums may not load properly when hosted without local API support.
 
 
 
